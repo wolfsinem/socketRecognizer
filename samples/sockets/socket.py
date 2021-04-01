@@ -29,26 +29,38 @@ COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 # through the command line argument --logs
 DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
 
+category = 'socket'
+
+# class_names = ["AOP-DIO",
+#                "AOP-TRAS2000", 
+#                "AOV-BTV", 
+#                "SPLITTER-MCP",
+#                "SPLITTER-POA", 
+#                "SPLITTER-UMU", 
+#                "WCD"]
+class_names = ['socket']
 
 class SocketConfig(Config):
     """Configuration for training on the toy  dataset.
     Derives from the base Config class and overrides some values.
     """
-    NAME = "socket"
+    NAME = category
     IMAGES_PER_GPU = 1
-    NUM_CLASSES = 1 + 1  # Background + socket
-    STEPS_PER_EPOCH = 100
+    NUM_CLASSES = 1 + len(class_names)
+    STEPS_PER_EPOCH = 5
     DETECTION_MIN_CONFIDENCE = 0.9
 
 
-class BalloonDataset(utils.Dataset):
+class SocketDataset(utils.Dataset):
 
-    def load_balloon(self, dataset_dir, subset):
+    def load_socket(self, dataset_dir, subset):
         """Load a subset of the Balloon dataset.
         dataset_dir: Root directory of the dataset.
         subset: Subset to load: train or val
         """
-        self.add_class("socket", 1, "socket")
+        # self.add_class("socket", 1, "socket")
+        for i in range(1,len(class_names)+1):
+            self.add_class(category, i, class_names[i-1])
 
         assert subset in ["train", "val"]
         dataset_dir = os.path.join(dataset_dir, subset)
@@ -111,13 +123,13 @@ class BalloonDataset(utils.Dataset):
 def train(model):
     """Train the model."""
     # Training dataset.
-    dataset_train = BalloonDataset()
-    dataset_train.load_balloon(args.dataset, "train")
+    dataset_train = SocketDataset()
+    dataset_train.load_socket(args.dataset, "train")
     dataset_train.prepare()
 
     # Validation dataset
-    dataset_val = BalloonDataset()
-    dataset_val.load_balloon(args.dataset, "val")
+    dataset_val = SocketDataset()
+    dataset_val.load_socket(args.dataset, "val")
     dataset_val.prepare()
 
     print("Training network heads")
