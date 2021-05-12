@@ -83,7 +83,23 @@ class SocketDataset(Dataset):
         return boxes, width, height
 
 
-    def load_mask(self, image_id):
+    def create_mask(self, bb, x):
+        """[summary]
+
+        Args:
+            bb ([type]): [description]
+            x ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        rows,cols,*_ = x.shape
+        masks = np.zeros((rows, cols))
+        bb = bb.astype(np.int)
+        masks[bb[0][0]:bb[0][2], bb[0][1]:bb[0][3]] = 1.
+        return masks
+
+    def load_mask(self, image_id, image):
         """[summary]
 
         Args:
@@ -94,10 +110,12 @@ class SocketDataset(Dataset):
         """
         info = self.image_info[image_id]
         path = info['annotation']
+
         boxes, w, h = self.extract_boxes(path)
         boxes = np.array(boxes)
 
-        # create masks
+        Y = self.create_mask(boxes, image) 
+
         class_ids = list()
         for i in range(len(boxes)):
             class_ids.append(self.class_names.index('AOP_BTV1'))
@@ -116,7 +134,7 @@ class SocketDataset(Dataset):
             class_ids.append(self.class_names.index('SPLITTER_UMU_met_kapje'))
             class_ids.append(self.class_names.index('WCD_tweegats'))
         
-        return boxes
+        return boxes, Y
 
 
     def image_reference(self, image_id):
