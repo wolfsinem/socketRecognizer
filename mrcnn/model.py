@@ -1209,7 +1209,7 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
     """
     # Load image and mask
     image = dataset.load_image(image_id)
-    mask, class_ids = dataset.load_mask(image_id)
+    mask, class_ids = dataset.load_mask(image_id, image)
     original_shape = image.shape
     image, window, scale, padding, crop = utils.resize_image(
         image,
