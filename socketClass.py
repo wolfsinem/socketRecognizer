@@ -1,5 +1,6 @@
 from matplotlib.pyplot import box
 import numpy
+from tensorflow.python.ops.gen_array_ops import identity
 from mrcnn.utils import Dataset
 from os import listdir
 from xml.etree import ElementTree
@@ -40,6 +41,7 @@ class SocketDataset(Dataset):
 
         images_dir = dataset_dir + '/Images/'
         annotations_dir = dataset_dir + '/Annots/'
+
         for filename in listdir(images_dir):
             image_id = filename[:-4]
 
@@ -51,6 +53,7 @@ class SocketDataset(Dataset):
 
             img_path = images_dir + filename
             ann_path = annotations_dir + image_id + '.xml'
+            
             self.add_image(category, image_id=image_id,
                            path=img_path, annotation=ann_path)
             
@@ -77,13 +80,14 @@ class SocketDataset(Dataset):
         
         for i in boxes:
             boxes = [[int(x) for x in i]]
+
         # extract image dimensions
         width = int(root.find('.//size/width').text)
         height = int(root.find('.//size/height').text)
         return boxes, width, height
 
 
-    def create_mask(self, bb, x):
+    def create_mask(self, bb, x, id):
         """[summary]
 
         Args:
@@ -94,9 +98,9 @@ class SocketDataset(Dataset):
             [type]: [description]
         """
         rows,cols,*_ = x.shape
-        masks = np.zeros((rows, cols))
+        masks = np.zeros([rows, cols, len(bb)], dtype='uint8')
         bb = bb.astype(np.int)
-        masks[bb[0][0]:bb[0][2], bb[0][1]:bb[0][3]] = 1.
+        masks[bb[0][0]:bb[0][2], bb[0][1]:bb[0][3]] = id
         return masks
 
     def load_mask(self, image_id, image):
@@ -114,10 +118,10 @@ class SocketDataset(Dataset):
         boxes, w, h = self.extract_boxes(path)
         boxes = np.array(boxes)
 
-        Y = self.create_mask(boxes, image) 
 
         class_ids = list()
         for i in range(len(boxes)):
+            masks = self.create_mask(boxes, image, 1) 
             class_ids.append(self.class_names.index('AOP_BTV1'))
             class_ids.append(self.class_names.index('AOP_DIO_01'))
             class_ids.append(self.class_names.index('AOP_EVK80'))
@@ -134,7 +138,7 @@ class SocketDataset(Dataset):
             class_ids.append(self.class_names.index('SPLITTER_UMU_met_kapje'))
             class_ids.append(self.class_names.index('WCD_tweegats'))
         
-        return boxes, Y
+        return masks, asarray(class_ids, dtype='int32')
 
 
     def image_reference(self, image_id):
