@@ -70,13 +70,10 @@ class SocketDataset(mrcnn.utils.Dataset):
 
 class SocketConfig(mrcnn.config.Config):
     NAME = "socketConfig"
-
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
-    
     NUM_CLASSES = 1 + 1
-
-    STEPS_PER_EPOCH = 1
+    STEPS_PER_EPOCH = 100
 
 train_set = SocketDataset()
 train_set.load_dataset(dataset_dir=dataset_dir, is_train=True)

@@ -17,10 +17,10 @@ model = mrcnn.model.MaskRCNN(mode="inference",
                              config=SimpleConfig(),
                              model_dir=os.getcwd())
 
-model.load_weights(filepath="/Users/wolfsinem/maskrcnn/logs/socketconfig20210518T0046/mask_rcnn_socketconfig_0001.h5", 
+model.load_weights(filepath="/Users/wolfsinem/maskrcnn/socketconfig20210518T1500/mask_rcnn_socketconfig_0001.h5", 
                    by_name=True)
 
-image = cv2.imread("/Users/wolfsinem/Downloads/socketdata/Images/00170.jpg")
+image = cv2.imread("/Users/wolfsinem/Downloads/socketdata/Images/00545.jpg")
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 r = model.detect([image], verbose=0)
