@@ -5,7 +5,13 @@ import mrcnn.visualize
 import cv2
 import os
 
-CLASS_NAMES = ['BG','socket']
+CLASS_NAMES = ['BG','AOP_BTV1','AOP_DIO_01','AOP_EVK80',
+                'AOP_TRAS1000','AOP_TRAS1000_no_key',
+                'AOP_X10DER_KT_01', 'SPLITTER_MCP_03',
+                'SPLITTER_POA_01IEC','SPLITTER_POA_01_met_kapje',
+                'SPLITTER_POA_01_zonder_kapje', 'SPLITTER_POA_3_met_kapje',
+                'SPLITTER_POA_3_zonder_kapje', 'SPLITTER_SQ601_met_kapje',
+                'SPLITTER_UMU_met_kapje', 'WCD_tweegats']
 
 class SimpleConfig(mrcnn.config.Config):
     NAME = "coco_inference"
@@ -17,10 +23,10 @@ model = mrcnn.model.MaskRCNN(mode="inference",
                              config=SimpleConfig(),
                              model_dir=os.getcwd())
 
-model.load_weights(filepath="/Users/wolfsinem/maskrcnn/socketconfig20210518T1500/mask_rcnn_socketconfig_0001.h5", 
+model.load_weights(filepath="/Users/wolfsinem/maskrcnn/multiClassWeights/mask_rcnn_socketconfig_0001.h5", 
                    by_name=True)
 
-image = cv2.imread("/Users/wolfsinem/Downloads/socketdata/Images/00545.jpg")
+image = cv2.imread("/Users/wolfsinem/Downloads/socketdata/Images/00666.jpg")
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 r = model.detect([image], verbose=0)
